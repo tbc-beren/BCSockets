@@ -1,2 +1,2 @@
 # BCSockets
-Black COdex minimal socket implementation in C++
+Black Codex minimal socket implementation in C++
