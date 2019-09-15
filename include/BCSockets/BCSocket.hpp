@@ -10,7 +10,6 @@
 */
 #pragma once
 
-#include <BCSockets/BCSocketsApp.hpp>
 #include <BCSockets/BCSocketException.hpp>
 
 #include <limits>
@@ -75,13 +74,13 @@ public:
         }
     }
 
-    virtual std::string read() {
+    virtual std::string read(int flags = 0) {
         static const int MAX_BUFFER_LEN = 433;
         std::string output;
         char text[MAX_BUFFER_LEN+1];
         int len;
         do {
-            len = ::recv(mSocket, text, MAX_BUFFER_LEN, 0);
+            len = ::recv(mSocket, text, MAX_BUFFER_LEN, flags);
             if (len < 0) {
                 throw BCSocketException("read failed");
             }
@@ -91,11 +90,11 @@ public:
         return output;
     }
 
-    virtual int write(const std::string& text) {
+    virtual int write(const std::string& text, int flags = 0) {
         if (text.length() > std::numeric_limits<int>::max()) {
             throw BCSocketException("write failed: too big");
         }
-        return ::send(mSocket, text.data(), static_cast<int>(text.length()), 0);
+        return ::send(mSocket, text.data(), static_cast<int>(text.length()), flags);
     }
 };
 
