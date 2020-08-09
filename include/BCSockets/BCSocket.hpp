@@ -16,15 +16,50 @@
 namespace BlackCodex {
 namespace BCSockets {
 
-class BCSocketBaseNet : public BCSocketBase 
+class BCSocketBaseImpl : public BCSocketBase 
 {
-public:
-    BCSocketBaseNet()
-    {}
-    BCSocketBaseNet(bcsocket_t s)
-    : BCSocketBase(s)
-    {}
+    int mFamily;
+    int mType;
+    int mProto;
 
+public:
+    BCSocketBaseImpl()
+    : mFamily(-1)
+    , mType(-1)
+    , mProto(-1)
+    {}
+    BCSocketBaseImpl(bcsocket_t s, int af, int type, int proto)
+    : mFamily(-1)
+    , mType(-1)
+    , mProto(-1)
+    {
+        reset(s, af, type, proto);
+    }
+    BCSocketBaseImpl(int af, int type, int proto)
+    : mFamily(-1)
+    , mType(-1)
+    , mProto(-1)
+    {
+        reset(af, type, proto);
+    }
+    int getFamily() const {
+        return mFamily;
+    }
+    int getType() const {
+        return mType;
+    }
+    int getProto() const {
+        return mProto;
+    }
+    void reset(bcsocket_t s, int af, int type, int proto) {
+        BCSocketBase::reset(s);
+        mFamily = af;
+        mType = type;
+        mProto = proto;
+    }
+    void reset(int af, int type, int proto) {
+        reset(::socket(af, type, proto), af, type, proto);
+    }
     void connect(const sockaddr* addr, int addrlen) {
         if (::connect(mSocket, addr, addrlen) < 0) {
             throw BCSocketException("connect failed");
@@ -34,9 +69,6 @@ public:
         if (::bind(mSocket, addr, addrlen) < 0) {
             throw BCSocketException("bind failed");
         }
-    }
-    void reset(int af, int type, int protocol) {
-        BCSocketBase::reset(::socket(af, type, protocol));
     }
     void listen(int backlog) {
         if (::listen(mSocket, backlog) < 0) {
@@ -61,23 +93,21 @@ template<class TBase> class BCSocketImpl : public TBase
 public:
     BCSocketImpl()
     {}
-    BCSocketImpl(bcsocket_t s)
-    : TBase(s)
+    BCSocketImpl(bcsocket_t s, int af, int type, int proto)
+        : TBase(s, af, type, proto)
+    {}
+    BCSocketImpl(int af, int type, int proto)
+        : TBase(af, type, proto)
     {}
 };
 
-class BCSocket : public BCSocketImpl<BCSocketBaseNet>
+class BCSocket : public BCSocketImpl<BCSocketBaseImpl>
 {
 public:
     BCSocket()
     {}
-
-    BCSocket(bcsocket_t s)
-        : BCSocketImpl<BCSocketBaseNet>(s)
-    {}
-
-    BCSocket(int af, int type, int protocol)
-        : BCSocketImpl<BCSocketBaseNet>( ::socket(af, type, protocol) )
+    BCSocket(int af, int type, int proto)
+        : BCSocketImpl<BCSocketBaseImpl>(af, type, proto)
     {}
 
     BCSocket(const BCSocket&) = delete;

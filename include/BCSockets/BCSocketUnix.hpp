@@ -19,21 +19,21 @@
 namespace BlackCodex {
 namespace BCSockets {
 
-class BCSocketUnix : public BCSocket {
+class BCSocketUnix : public BCSocketBaseImpl {
 public:
+    BCSocketUnix()
+    {}
     BCSocketUnix(int type)
-    : BCSocket(AF_UNIX, type, 0)
+    : BCSocketBaseImpl(AF_UNIX, type, 0)
     {}
 
-    void bind(const std::string& socketName) {
-        struct sockaddr_un addr;
-        addrFromName(addr, socketName);
-        BCSocket::bind((struct sockaddr*)&addr, sizeof(addr));
+    void reset(int type) {
+        BCSocketBaseImpl::reset(AF_UNIX, type, 0);
     }
     void connect(const std::string& socketName) {
         struct sockaddr_un addr;
         addrFromName(addr, socketName);
-        BCSocket::connect((sockaddr*)&addr, sizeof(struct sockaddr_un));
+        BCSocketBaseImpl::connect((sockaddr*)&addr, sizeof(struct sockaddr_un));
     }
 
 protected:
@@ -42,7 +42,7 @@ protected:
             throw BlackCodex::BCSockets::BCSocketException("socket name too long");
         }
         memset(&addr, 0, sizeof(addr));
-        addr.sun_family = AF_UNIX;
+        addr.sun_family = getFamily();
         strcpy(addr.sun_path, socketName.c_str());
     }
 };
