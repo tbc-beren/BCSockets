@@ -60,8 +60,7 @@ public:
             if (len < 0) {
                 throw BCSocketException("read failed");
             }
-            text[len] = 0;
-            output += text;
+            output.append(text, len);
         } while(len >= MAX_BUFFER_LEN);
         return output;
     }
