@@ -9,61 +9,26 @@
 *
 */
 
-#include <BCSockets/BCSocketBase.hpp>
+#include "testBCSockets.h"
 
 #include <gtest/gtest.h>
 
-class BCSocketMock : public BlackCodex::BCSockets::BCSocketBase
+TEST(BCSocketBase, basicCreateNoParams)
 {
-    std::string mData;
+    using namespace BlackCodex::BCSockets;
 
-    int mCountClose;
-    int mCountRead;
-    int mCountWrite;
+    BCSocketBase base;
 
-    int mMaxRead;
+    EXPECT_EQ(-1, base.get());
+}
+TEST(BCSocketBase, basicCreate)
+{
+    using namespace BlackCodex::BCSockets;
 
-public:
-    static const bcsocket_t SOCK_ID_MOCK = 0x0FEED50C;
-
-    BCSocketMock()
-    : BCSocketBase(SOCK_ID_MOCK)
-    , mMaxRead(1024)
-    {}
-
-    void setMaxRead(int mx) {
-        mMaxRead = mx;
-    }
-
-protected:
-    virtual void baseclose(bcsocket_t sock) override {
-        (void)(sock);
-        mCountClose++;
-    }
-    virtual int baseread(void* buffer, int bufferlen, int flags) override {
-        (void)(buffer);
-        (void)(bufferlen);
-        (void)(flags);
-
-        mCountRead++;
-        if (mData.size() == 0 || bufferlen == 0) {
-            return -1;
-        }
-
-        int maxSize = std::min(mMaxRead, bufferlen);
-        int readed = std::min((int)mData.size(), maxSize);
-        memcpy(buffer, mData.data(), readed);
-        mData = mData.substr(readed);
-        return readed;
-    }
-    virtual int basewrite(const void* buffer, int bufferlen, int flags) override {
-        (void)(flags);
-        mData.assign((char*)buffer, bufferlen);
-        mCountWrite++;
-        return mData.size();
-    }
-};
-
+    BCSocketBase base(AF_UNIX, 2, 3, -2);
+    
+    EXPECT_EQ(-2, base.get());
+}
 TEST(BCSocketBase, basic)
 {
     using namespace BlackCodex::BCSockets;

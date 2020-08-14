@@ -70,6 +70,7 @@ add_executable(
 
     # The tests
     test/test.cpp
+    test/testStream.cpp
     )
 target_link_libraries(BCSocketsTest gtest_main)
 target_link_libraries(BCSocketsTest BCSockets ${COVERAGE_OPTIONS})

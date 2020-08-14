@@ -22,16 +22,26 @@ namespace BCSockets {
 class BCSocketBase
 {
 protected:
-    bcsocket_t mSocket;
+    bcsocket_t  mSocket;
+    int         mFamily;
+    int         mType;
+    int         mProto;
 
 public:
     BCSocketBase()
     : mSocket(INVALID_SOCKET)
+    , mFamily(-1)
+    , mType(-1)
+    , mProto(-1)
     {}
-    BCSocketBase(bcsocket_t s)
-    : mSocket(s)
-    {}
-
+    BCSocketBase(int af, int type, int proto, bcsocket_t s)
+    : mSocket(INVALID_SOCKET)
+    , mFamily(-1)
+    , mType(-1)
+    , mProto(-1)
+    {
+        reset(af, type, proto, s);        
+    }
     virtual ~BCSocketBase() {
         reset();
     }
@@ -39,15 +49,35 @@ public:
     bcsocket_t get() const {
         return mSocket;
     }
+    int getFamily() const {
+        return mFamily;
+    }
+    int getType() const {
+        return mType;
+    }
+    int getProto() const {
+        return mProto;
+    }
 
     virtual void onClose() {}
 
-    virtual void reset(bcsocket_t s = INVALID_SOCKET) {
+    virtual void reset(int af, int type, int proto) {
+        bcsocket_t s = implSocket(af, type, proto);
+        reset(af, type, proto, s);
+    }
+    virtual void reset(int af, int type, int proto, bcsocket_t s) {
+        mFamily = af;
+        mType = type;
+        mProto = proto;
         if (INVALID_SOCKET != mSocket) {
             onClose();
-            baseclose(mSocket);
+            implClose(mSocket);
         }
         mSocket = s;
+    }
+
+    virtual void reset(bcsocket_t s = INVALID_SOCKET) {
+        reset(-1, -1, -1, s);
     }
 
     std::string read(int flags = 0) {
@@ -56,7 +86,7 @@ public:
         char text[MAX_BUFFER_LEN+1];
         int len;
         do {
-            len = baseread(text, MAX_BUFFER_LEN, flags);
+            len = implRead(text, MAX_BUFFER_LEN, flags);
             if (len < 0) {
                 throw BCSocketException("read failed");
             }
@@ -69,20 +99,26 @@ public:
         if (text.length() > std::numeric_limits<int>::max()) {
             throw BCSocketException("write failed: too big");
         }
-        return basewrite(text.data(), static_cast<int>(text.length()), flags);
+        return implWrite(text.data(), static_cast<int>(text.length()), flags);
     }
 
 protected:
-    virtual void baseclose(bcsocket_t sock) {
+    virtual bcsocket_t implSocket(int af, int type, int proto) {
+        (void)(af);
+        (void)(type);
+        (void)(proto);
+        return INVALID_SOCKET;
+    }
+    virtual void implClose(bcsocket_t sock) {
         (void)(sock);
     }
-    virtual int baseread(void* buffer, int bufferlen, int flags) {
+    virtual int implRead(void* buffer, int bufferlen, int flags) {
         (void)(buffer);
         (void)(bufferlen);
         (void)(flags);
         return -1;
     }
-    virtual int basewrite(const void* buffer, int bufferlen, int flags) {
+    virtual int implWrite(const void* buffer, int bufferlen, int flags) {
         (void)(buffer);
         (void)(bufferlen);
         (void)(flags);

@@ -16,105 +16,92 @@
 namespace BlackCodex {
 namespace BCSockets {
 
-class BCSocketBaseImpl : public BCSocketBase 
+class BCSocketImplEx
 {
-    int mFamily;
-    int mType;
-    int mProto;
-
 public:
-    BCSocketBaseImpl()
-    : mFamily(-1)
-    , mType(-1)
-    , mProto(-1)
+    static bcsocket_t implSocket(int af, int type, int proto) {
+        return ::socket(af, type, proto);
+    }
+    static int implConnect(bcsocket_t sock, const sockaddr* addr, int addrlen) {
+        return ::connect(sock, addr, addrlen);
+    }
+    static void implClose(bcsocket_t sock) {
+        ::closesocket(sock);
+    }
+    static int implRecv(bcsocket_t sock, void* buffer, int bufferlen, int flags) {
+        return ::recv(sock, buffer, bufferlen, flags);
+    }
+    static int implSend(bcsocket_t sock, const void* buffer, int bufferlen, int flags) {
+        return ::send(sock, buffer, bufferlen, flags);
+    }
+
+    static int implListen(bcsocket_t sock, int backlog) {
+        return ::listen(sock, backlog);
+    }
+    static int  implBind(bcsocket_t sock, const sockaddr* addr, int addrlen) {
+        return ::bind(sock, addr, addrlen);
+    }    
+};
+
+template<typename TImpl>
+class BCSocketClient : public BCSocketBase
+{
+public:
+    BCSocketClient()
     {}
-    BCSocketBaseImpl(bcsocket_t s, int af, int type, int proto)
-    : mFamily(-1)
-    , mType(-1)
-    , mProto(-1)
-    {
-        reset(s, af, type, proto);
-    }
-    BCSocketBaseImpl(int af, int type, int proto)
-    : mFamily(-1)
-    , mType(-1)
-    , mProto(-1)
-    {
-        reset(af, type, proto);
-    }
-    int getFamily() const {
-        return mFamily;
-    }
-    int getType() const {
-        return mType;
-    }
-    int getProto() const {
-        return mProto;
-    }
-    void reset(bcsocket_t s, int af, int type, int proto) {
-        BCSocketBase::reset(s);
-        mFamily = af;
-        mType = type;
-        mProto = proto;
-    }
-    void reset(int af, int type, int proto) {
-        reset(::socket(af, type, proto), af, type, proto);
-    }
+    BCSocketClient(int af, int type, int proto, bcsocket_t s)
+    : BCSocketBase(af, type, proto, s)
+    {}
+
     void connect(const sockaddr* addr, int addrlen) {
-        if (::connect(mSocket, addr, addrlen) < 0) {
+        bcsocket_t sock = get();
+        if (TImpl::implConnect(sock, addr, addrlen) < 0) {
             throw BCSocketException("connect failed");
         }
     }
-    void bind(const sockaddr* addr, int addrlen) {
-        if (::bind(mSocket, addr, addrlen) < 0) {
-            throw BCSocketException("bind failed");
-        }
+    virtual bcsocket_t implSocket(int af, int type, int proto) {
+        bcsocket_t sock = TImpl::implSocket(af, type, proto);
+        return sock;
     }
+    virtual void implClose(bcsocket_t sock) override {
+        TImpl::implClose(sock);
+    }
+    virtual int implRead(void* buffer, int bufferlen, int flags) override {
+        return TImpl::implRecv(mSocket, buffer, bufferlen, flags);
+    }
+    virtual int implWrite(const void* buffer, int bufferlen, int flags) override {
+        return TImpl::implSend(mSocket, buffer, bufferlen, flags);
+    }
+};
+
+template<typename TImpl>
+class BCSocketSrv : public BCSocketBase
+{
+public:
+    BCSocketSrv()
+    {}
+    BCSocketSrv(int af, int type, int proto, bcsocket_t s)
+    : BCSocketBase(af, type, proto, s)
+    {}
+
+    virtual void bind() = 0;
+
     void listen(int backlog) {
-        if (::listen(mSocket, backlog) < 0) {
+        if (TImpl::implListen(mSocket, backlog) < 0) {
             throw BCSocketException("listen failed");
         }
     }
 
+    void reset(int af, int type, int proto) {
+        bcsocket_t s = TImpl::implSocket(af, type, proto);
+        BCSocketBase::reset(af, type, proto, s);
+    }
+
 protected:
-    virtual void baseclose(bcsocket_t sock) override {
-        ::closesocket(sock);
-    }
-    virtual int baseread(void* buffer, int bufferlen, int flags) override {
-        return ::recv(mSocket, buffer, bufferlen, flags);
-    }
-    virtual int basewrite(const void* buffer, int bufferlen, int flags) override {
-        return ::send(mSocket, buffer, bufferlen, flags);
-    }
-};
-
-template<class TBase> class BCSocketImpl : public TBase
-{
-public:
-    BCSocketImpl()
-    {}
-    BCSocketImpl(bcsocket_t s, int af, int type, int proto)
-        : TBase(s, af, type, proto)
-    {}
-    BCSocketImpl(int af, int type, int proto)
-        : TBase(af, type, proto)
-    {}
-};
-
-class BCSocket : public BCSocketImpl<BCSocketBaseImpl>
-{
-public:
-    BCSocket()
-    {}
-    BCSocket(int af, int type, int proto)
-        : BCSocketImpl<BCSocketBaseImpl>(af, type, proto)
-    {}
-
-    BCSocket(const BCSocket&) = delete;
-    BCSocket& operator=(const BCSocket&) = delete;
-
-    virtual ~BCSocket() {
-        BCSocketBase::reset();
+    void implBind(const sockaddr* addr, int addrlen) {
+        if (TImpl::implBind(mSocket, addr, addrlen) < 0) {
+            throw BCSocketException("bind failed");
+        }
     }
 };
 
