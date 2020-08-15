@@ -40,7 +40,7 @@ public:
     , mType(-1)
     , mProto(-1)
     {
-        reset(af, type, proto, s);        
+        reset(af, type, proto, s);
     }
     virtual ~BCSocketBase() {
         reset();

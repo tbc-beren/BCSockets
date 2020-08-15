@@ -12,7 +12,7 @@
 
 #include <BCSockets/BCSocket.hpp>
 
-//#include <cstring>
+#include <cstring>
 
 namespace BlackCodex {
 namespace BCSockets {
