@@ -80,6 +80,27 @@ public:
         reset(-1, -1, -1, s);
     }
 
+    bool canRead(struct timeval& tv) const {
+        const bcsocket_t thisSocket = get();
+
+        fd_set ready;
+        FD_ZERO(&ready);
+        FD_SET(thisSocket, &ready);
+
+        int readyCount = implSelect(thisSocket+1, &ready, NULL, NULL, &tv);
+        if (0 < readyCount) {
+            return true;
+        }
+        if (FD_ISSET(thisSocket, &ready)) {
+            return true;
+        }
+        return false;
+    }
+    bool canRead() const {
+        struct timeval tv = {0, 0};
+        return canRead(tv);
+    }
+
     std::string read(int flags = 0) {
         static const int MAX_BUFFER_LEN = 2048;
         std::string output;
@@ -122,6 +143,16 @@ protected:
         (void)(buffer);
         (void)(bufferlen);
         (void)(flags);
+        return -1;
+    }
+    virtual int implSelect(bcsocket_t fdMax, fd_set *readfds, fd_set *writefds,
+                           fd_set *exceptfds, struct timeval *timeout) const
+    {
+        (void)fdMax;
+        (void)readfds;
+        (void)writefds;
+        (void)exceptfds;
+        (void)timeout;
         return -1;
     }
 };

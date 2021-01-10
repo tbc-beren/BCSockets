@@ -38,6 +38,7 @@ TEST(BCSocketBase, basic)
     BCSocketBase base;
     EXPECT_EQ(INVALID_SOCKET, base.get());
     EXPECT_EQ(-1, base.write("Text"));
+    EXPECT_TRUE(base.canRead());
     EXPECT_THROW(base.read(), BCSocketException);
 }
 

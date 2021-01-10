@@ -34,13 +34,17 @@ public:
     static int implSend(bcsocket_t sock, const void* buffer, int bufferlen, int flags) {
         return ::send(sock, buffer, bufferlen, flags);
     }
+    static int implSelect(bcsocket_t nfds, fd_set *readfds, fd_set *writefds,
+                          fd_set *exceptfds, struct timeval *timeout) {
+        return ::select(nfds, readfds, writefds, exceptfds, timeout);
+    }
 
     static int implListen(bcsocket_t sock, int backlog) {
         return ::listen(sock, backlog);
     }
     static int  implBind(bcsocket_t sock, const sockaddr* addr, int addrlen) {
         return ::bind(sock, addr, addrlen);
-    }    
+    }        
 };
 
 template<typename TImpl>
@@ -72,6 +76,10 @@ public:
     virtual int implWrite(const void* buffer, int bufferlen, int flags) override {
         return TImpl::implSend(mSocket, buffer, bufferlen, flags);
     }
+    virtual int implSelect(bcsocket_t fdMax, fd_set *readfds, fd_set *writefds,
+                           fd_set *exceptfds, struct timeval *timeout) const override {
+        return TImpl::implSelect(fdMax, readfds, writefds, exceptfds, timeout);
+    }
 };
 
 template<typename TImpl>
@@ -102,6 +110,10 @@ protected:
         if (TImpl::implBind(mSocket, addr, addrlen) < 0) {
             throw BCSocketException("bind failed");
         }
+    }
+    int implSelect(bcsocket_t fdMax, fd_set *readfds, fd_set *writefds,
+                   fd_set *exceptfds, struct timeval *timeout) const override {
+        return TImpl::implSelect(fdMax, readfds, writefds, exceptfds, timeout);
     }
 };
 

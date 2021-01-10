@@ -140,7 +140,7 @@ private:
                 bool forceClose = false;
                 if (sock) {
                     if (INVALID_SOCKET != sock->get()) {
-                        if (canRead(*sock)) {
+                        if (sock->canRead()) {
                             std::string data = sock->read();
                             if (data.empty()) {
                                 onPeerClose(*sock);
@@ -173,26 +173,6 @@ private:
         }
         onServerStop();
     }
-
-    static bool canRead(const BlackCodex::BCSockets::BCSocketBase& sock) {
-        const bcsocket_t thisSocket = sock.get();
-
-        timeval tv;
-        fd_set ready;
-
-        tv.tv_sec = 0;
-        tv.tv_usec = 0;
-
-        FD_ZERO(&ready);
-        FD_SET(thisSocket, &ready);
-
-        int readyCount = ::select(thisSocket+1, &ready, NULL, NULL, &tv);
-        if (0 < readyCount || FD_ISSET(thisSocket, &ready)) {
-            return true;
-        }
-        return false;
-    }
-
     void _runAcceptThread() {
         while(mRun) {
             const bcsocket_t thisSocket = mSocket->get();
@@ -200,13 +180,8 @@ private:
             timeval tv;
             tv.tv_sec = 0;
             tv.tv_usec = mTimeAccept * 1000;
-
-            fd_set ready;
-            FD_ZERO(&ready);
-            FD_SET(thisSocket, &ready);
-
-            int readyCount = ::select(thisSocket+1, &ready, NULL, NULL, &tv);
-            if (0 < readyCount || FD_ISSET(thisSocket, &ready)) {
+            bool can = mSocket->canRead(tv);
+            if (can) {
                 int sd2 = ::accept(thisSocket, NULL, NULL);
                 if (sd2 < 0) {
                     continue;

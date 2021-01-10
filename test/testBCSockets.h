@@ -65,4 +65,13 @@ protected:
         mCountWrite++;
         return mData.size();
     }
+    virtual int implSelect(bcsocket_t fdMax, fd_set *readfds, fd_set *writefds,
+                           fd_set *exceptfds, struct timeval *timeout) const override {
+        (void)fdMax;
+        (void)readfds;
+        (void)writefds;
+        (void)exceptfds;
+        (void)timeout;
+        return 0;
+    }
 };
