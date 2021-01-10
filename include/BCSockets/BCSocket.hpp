@@ -44,7 +44,7 @@ public:
     }
     static int  implBind(bcsocket_t sock, const sockaddr* addr, int addrlen) {
         return ::bind(sock, addr, addrlen);
-    }        
+    }
 };
 
 template<typename TImpl>
@@ -56,6 +56,9 @@ public:
     BCSocketClient(int af, int type, int proto, bcsocket_t s)
     : BCSocketBase(af, type, proto, s)
     {}
+    virtual ~BCSocketClient() {
+        reset();
+    }
 
     void connect(const sockaddr* addr, int addrlen) {
         bcsocket_t sock = get();
@@ -91,6 +94,9 @@ public:
     BCSocketSrv(int af, int type, int proto, bcsocket_t s)
     : BCSocketBase(af, type, proto, s)
     {}
+    virtual ~BCSocketSrv() {
+        BCSocketBase::reset(INVALID_SOCKET);
+    }
 
     virtual void bind() = 0;
 

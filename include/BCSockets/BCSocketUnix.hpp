@@ -27,6 +27,9 @@ public:
     {
         reset(type);
     }
+    virtual ~BCSocketUnix() {
+        BCSocketClient<BCSocketImplEx>::reset();
+    }
 
     void reset(int type) {
         BCSocketClient<BCSocketImplEx>::reset(AF_UNIX, type, 0);
@@ -56,12 +59,19 @@ public:
     {
         reset(type, socketName);
     }
+    virtual ~BCSocketUnixSrv() {
+        reset();
+    }
     void reset() {
-        reset(0, "");
+        reset(AF_UNSPEC, "");
     }
     void reset(int type, const std::string& socketName) {
         mName = socketName;
-        BCSocketSrv<BCSocketImplEx>::reset(AF_UNIX, type, 0);
+        if (AF_UNSPEC == type) {
+            BCSocketBase::reset();
+        } else {
+            BCSocketSrv<BCSocketImplEx>::reset(AF_UNIX, type, 0);
+        }
     }
     void bind() override {
         struct sockaddr_un addr;
