@@ -83,6 +83,10 @@ public:
     bool canRead(struct timeval& tv) const {
         const bcsocket_t thisSocket = get();
 
+        if (INVALID_SOCKET == thisSocket) {
+            throw BCSocketInvalidException();
+        }
+
         fd_set ready;
         FD_ZERO(&ready);
         FD_SET(thisSocket, &ready);

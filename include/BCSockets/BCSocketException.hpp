@@ -23,6 +23,14 @@ public:
     {}
 };
 
+class BCSocketInvalidException : public BCSocketException
+{
+public:
+    BCSocketInvalidException()
+        : BCSocketException("invalid socket")
+    {}
+};
+
 class BCSocketTimeoutException : public BCSocketException
 {
 public:
