@@ -37,11 +37,28 @@ TEST(BCSocketBase, basic)
 
     BCSocketBase base;
     EXPECT_EQ(INVALID_SOCKET, base.get());
-    EXPECT_EQ(-1, base.write("Text"));
-    EXPECT_TRUE(base.canRead());
     EXPECT_THROW(base.read(), BCSocketException);
 }
+TEST(BCSocketBase, basicWrite)
+{
+    using namespace BlackCodex::BCSockets;
 
+    static const std::string STRING_TEST("SomeWrite");
+
+    BCSocketBase base;
+    EXPECT_EQ(INVALID_SOCKET, base.get());
+    EXPECT_EQ(-1, base.write("Text"));
+}
+TEST(BCSocketBase, basicCanRead)
+{
+    using namespace BlackCodex::BCSockets;
+
+    static const std::string STRING_TEST("SomeWrite");
+
+    BCSocketBase base;
+    EXPECT_EQ(INVALID_SOCKET, base.get());
+    EXPECT_TRUE(base.canRead());
+}
 TEST(BCSocketBase, basicMock)
 {
     using namespace BlackCodex::BCSockets;
@@ -56,7 +73,6 @@ TEST(BCSocketBase, basicMock)
     std::string str = mock.read();
     EXPECT_EQ(STRING_TEST, str);
 }
-
 TEST(BCSocketBase, basicMockMaxRead)
 {
     using namespace BlackCodex::BCSockets;
