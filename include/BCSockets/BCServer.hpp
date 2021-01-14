@@ -175,14 +175,12 @@ private:
     }
     void _runAcceptThread() {
         while(mRun) {
-            const bcsocket_t thisSocket = mSocket->get();
-
             timeval tv;
             tv.tv_sec = 0;
             tv.tv_usec = mTimeAccept * 1000;
             bool can = mSocket->canRead(tv);
             if (can) {
-                int sd2 = ::accept(thisSocket, NULL, NULL);
+                int sd2 = mSocket->accept();
                 if (sd2 < 0) {
                     continue;
                 }

@@ -45,6 +45,9 @@ public:
     static int  implBind(bcsocket_t sock, const sockaddr* addr, int addrlen) {
         return ::bind(sock, addr, addrlen);
     }
+    static int implAccept(int sock, struct sockaddr *addr, socklen_t *addrlen) {
+        return ::accept(sock, addr, addrlen);
+    }
 };
 
 template<typename TImpl>
@@ -104,6 +107,10 @@ public:
         if (TImpl::implListen(mSocket, backlog) < 0) {
             throw BCSocketException("listen failed");
         }
+    }
+
+    bcsocket_t accept() {
+        return TImpl::implAccept(mSocket, nullptr, nullptr);
     }
 
     void reset(int af, int type, int proto) {
