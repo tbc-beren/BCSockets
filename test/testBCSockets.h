@@ -16,7 +16,7 @@
 #include <cstring>
 #include <string>
 
-class BCSocketMock : public BlackCodex::BCSockets::BCSocketBase
+class BCSocketMockImpl : public BlackCodex::BCSockets::BCSocketBase
 {
     std::string mData;
 
@@ -29,7 +29,7 @@ class BCSocketMock : public BlackCodex::BCSockets::BCSocketBase
 public:
     static const bcsocket_t SOCK_ID_MOCK = 0x0FEED50C;
 
-    BCSocketMock()
+    BCSocketMockImpl()
     : BCSocketBase(63000, 63001, 63002, SOCK_ID_MOCK)
     , mMaxRead(1024)
     {}

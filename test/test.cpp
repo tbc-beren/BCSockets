@@ -56,8 +56,8 @@ TEST(BCSocketBase, basicMock)
 
     static const std::string STRING_TEST("SomeWrite");
 
-    BCSocketMock mock;
-    const bcsocket_t expected = BCSocketMock::SOCK_ID_MOCK;
+    BCSocketMockImpl mock;
+    const bcsocket_t expected = BCSocketMockImpl::SOCK_ID_MOCK;
     EXPECT_EQ(expected, mock.get());
     EXPECT_EQ(9, mock.write(STRING_TEST));
     
@@ -71,8 +71,8 @@ TEST(BCSocketBase, basicMockMaxRead)
     static const std::string STRING_TEST_WRITE("SomeWrite");
     static const std::string STRING_TEST_READ ("Some");
 
-    BCSocketMock mock;
-    const bcsocket_t expected = BCSocketMock::SOCK_ID_MOCK;
+    BCSocketMockImpl mock;
+    const bcsocket_t expected = BCSocketMockImpl::SOCK_ID_MOCK;
     EXPECT_EQ(expected, mock.get());
     mock.setMaxRead(4);
     EXPECT_EQ(9, mock.write(STRING_TEST_WRITE));
