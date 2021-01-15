@@ -45,10 +45,10 @@ public:
     }
 };
 
-template<class TMasterSocket>
-class BCServer
+template<class TMasterSocket, class TClientSocket>
+class BCServerBase
 {
-    typedef std::shared_ptr<BCServerSocket> BCServerSocketPtr;
+    typedef std::shared_ptr<TClientSocket>  TClientSocketPtr;
 
     bool                            mRun;
     int                             mTimeAccept;
@@ -56,25 +56,25 @@ class BCServer
     std::thread                     mThreadMaster;
     std::thread                     mThreadHandler;
     std::mutex                      mMtxConnections;
-    std::queue<BCServerSocketPtr>   mConnections;
+    std::queue<TClientSocketPtr>    mConnections;
 
 public:
-    BCServer(std::shared_ptr<TMasterSocket> sock)
+    BCServerBase(std::shared_ptr<TMasterSocket> sock)
        : mRun(false)
        , mTimeAccept(1000)
        , mSocket(sock)
     {}
 
-    virtual ~BCServer()
+    virtual ~BCServerBase()
     {}
 
     void setTimeAccept(int millis) {
         mTimeAccept = millis;
     }
 
-    virtual std::shared_ptr<BCServerSocket> onConnection(bcsocket_t sock)
+    virtual TClientSocketPtr onConnection(bcsocket_t sock)
     {
-        return std::make_shared<BCServerSocket>(
+        return std::make_shared<TClientSocket>(
                     mSocket->getFamily(),
                     mSocket->getType(),
                     mSocket->getProto(),
@@ -84,11 +84,11 @@ public:
 
     virtual void onServerStart()  {}
     virtual void onServerStop()   {}
-    virtual void onInput(BCServerSocket& sock, const std::string& data) {
+    virtual void onInput(TClientSocket& sock, const std::string& data) {
         (void)(sock);
         (void)(data);
     }
-    virtual void onPeerClose(BCServerSocket& sock) {
+    virtual void onPeerClose(TClientSocket& sock) {
         (void)(sock);
     }
 
@@ -98,8 +98,8 @@ public:
     }
     void start(bool bSync = true) {
         mRun = true;
-        mThreadHandler = std::thread(&BCServer::_runHandlerThread, this);
-        mThreadMaster = std::thread(&BCServer::_runAcceptThread, this);
+        mThreadHandler = std::thread(&BCServerBase<TMasterSocket, TClientSocket>::_runHandlerThread, this);
+        mThreadMaster = std::thread(&BCServerBase<TMasterSocket, TClientSocket>::_runAcceptThread, this);
         while(bSync && mRun) {
             std::this_thread::sleep_for( std::chrono::seconds(1) );
         }
@@ -123,47 +123,46 @@ public:
     }
 
 private:
+    TClientSocketPtr _handlerGetNextConnection() {
+        TClientSocketPtr sock;
+        std::lock_guard<std::mutex> lock(mMtxConnections);
+        if (!mConnections.empty())
+        {
+            sock = mConnections.front();
+            mConnections.pop();
+        }
+        return sock;
+    }
     void _runHandlerThread() {
         onServerStart();
         mRun=true;
         while(mRun) {
-            if (0 < mConnections.size())
-            {
-                std::shared_ptr<BCServerSocket> sock;
-                
-                {
-                    std::lock_guard<std::mutex> lock(mMtxConnections);
-                    sock = mConnections.front();
-                    mConnections.pop();
-                }
-
+            TClientSocketPtr sock = _handlerGetNextConnection();
+            if (sock) {
                 bool forceClose = false;
-                if (sock) {
-                    if (INVALID_SOCKET != sock->get()) {
-                        if (sock->canRead()) {
-                            std::string data = sock->read();
-                            if (data.empty()) {
-                                onPeerClose(*sock);
-                                forceClose = true;
-                            } else {
-                                onInput(*sock, data);
-                                sock->onInput(data);
-                            }
+                if (INVALID_SOCKET != sock->get()) {
+                    if (sock->canRead()) {
+                        std::string data = sock->read();
+                        if (data.empty()) {
+                            onPeerClose(*sock);
+                            forceClose = true;
                         } else {
-                            sock->onIdle();
+                            onInput(*sock, data);
+                            sock->onInput(data);
                         }
                     } else {
-                        forceClose = true;
+                        sock->onIdle();
                     }
-                    if (sock->get() < 0) {
-                        forceClose = true;
-                    }
-                    if (forceClose) {
-                        sock->reset();
-                        sock.reset();
-                    }
+                } else {
+                    forceClose = true;
                 }
-
+                if (INVALID_SOCKET == sock->get()) {
+                    forceClose = true;
+                }
+                if (forceClose) {
+                    sock->reset();
+                    sock.reset();
+                }
                 if (sock) {
                     std::lock_guard<std::mutex> lock(mMtxConnections);
                     mConnections.push(sock);
@@ -185,7 +184,7 @@ private:
                     continue;
                 }
 
-                std::shared_ptr<BCServerSocket> conn = onConnection(sd2) ;
+                std::shared_ptr<TClientSocket> conn = onConnection(sd2);
                 if(conn) {
                     std::lock_guard<std::mutex> lock(mMtxConnections);
                     mConnections.push(conn);
@@ -193,6 +192,15 @@ private:
             }
         }
     }
+};
+
+template <typename T>
+class BCServer : public BCServerBase<T, BCServerSocket>
+{
+public:
+    BCServer(std::shared_ptr<T> sock)
+    : BCServerBase<T, BCServerSocket>(sock)
+    {}
 };
 
 
