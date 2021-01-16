@@ -80,3 +80,33 @@ else()
   target_compile_options(BCSocketsTest PRIVATE -Wall -Wextra -pedantic -Werror ${COVERAGE_OPTIONS})
 endif()
 add_test(NAME BCSocketsTestName COMMAND BCSocketsTest)
+
+# Coverage Update target
+if (DEFINED BCSOCKETS_TESTCOVERAGE)
+add_custom_command(
+  OUTPUT BCCoverage
+  COMMENT "BCCoverage Command"
+  COMMAND rm -f *.info
+  COMMAND rm -rf cov-results
+  COMMAND ./BCSocketsTest
+  COMMAND lcov -t "result" -o coverage_01.info -c -d .
+  COMMAND lcov --remove coverage_01.info -o coverage.info '/usr/include/*' '*/googletest-src/*'
+  COMMAND genhtml -o cov-results coverage.info
+)
+
+else ()
+
+add_custom_command(
+  OUTPUT BCCoverage
+  COMMENT "BCCoverage Command"
+  COMMAND echo "Coverage not set. Please rebuild with:"
+  COMMAND echo "     cmake ${CMAKE_SOURCE_DIR} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DBCSOCKETS_TESTCOVERAGE=1"
+)
+
+endif (DEFINED BCSOCKETS_TESTCOVERAGE)
+
+add_custom_target(coverage
+  DEPENDS
+    BCCoverage
+    BCSocketsTest
+    )
