@@ -15,26 +15,29 @@
 #include <gtest/gtest.h>
 
 using namespace BlackCodex::BCSockets;
-template<class TMaster>
-class BCServerTestEcho : public BCServer<TMaster>
+
+// TControl is the socket used for bind / listen / accept
+// TSlave is the socket that results from onConnection() / accept()
+template<class TControl, class TSlave>
+class BCServerTestEchoEx : public BCServerBase<TControl, TSlave>
 {
 public:
     std::set<std::string> messages;
 
-    BCServerTestEcho(std::shared_ptr<TMaster> sock)
-    : BCServer<TMaster>(sock)
+    BCServerTestEchoEx(std::shared_ptr<TControl> sock)
+    : BCServerBase<TControl, TSlave>(sock)
     {
-        BCServer<TMaster>::setTimeAccept(100);        
+        BCServerBase<TControl, TSlave>::setTimeAccept(100);
     }
 
-    virtual std::shared_ptr<BCServerSocket> onConnection(bcsocket_t sock) {
-        return BCServer<TMaster>::onConnection(sock);
+    virtual std::shared_ptr<TSlave> onConnection(bcsocket_t sock) {
+        return  BCServerBase<TControl, TSlave>::onConnection(sock);
     }
 
-    virtual void onInput(BCServerSocket& sock, const std::string& data) override {
+    virtual void onInput(TSlave& sock, const std::string& data) override {
         (void)sock;
         messages.insert(data);
-        sock.write(data);
+        sock.write("RV:"+data);
     }
 };
 
@@ -48,7 +51,7 @@ TEST(TestStream, DISABLED_testStreamUnix) {
     unlink(SOCKET_NAME.c_str());
 
     BCSocketsApp app;
-    BCServerTestEcho<BCSocketUnixSrv> unixSrv(
+    BCServerTestEchoEx<BCSocketUnixSrv, BCServerSocket<BCSocketImplEx>> unixSrv(
         std::make_shared<BCSocketUnixSrv>(SOCKET_TYPE, SOCKET_NAME)
         );
     unixSrv.init();
@@ -62,7 +65,7 @@ TEST(TestStream, DISABLED_testStreamUnix) {
     unixClient.write(dataSend);
 
     const std::string dataRecv = unixClient.read();
-    EXPECT_EQ(dataSend, dataRecv);
+    EXPECT_EQ("RV:"+dataSend, dataRecv);
 
     std::this_thread::sleep_for( std::chrono::milliseconds(100) );
 

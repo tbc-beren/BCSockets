@@ -19,15 +19,15 @@
 namespace BlackCodex {
 namespace BCSockets {
 
-
-class BCServerSocket : public BCSocketClient<BCSocketImplEx>
+template <typename TSocketImpl>
+class BCServerSocket : public BCSocketClient<TSocketImpl>
 {
 public:
     BCServerSocket()
-        : BCSocketClient<BCSocketImplEx>()
+        : BCSocketClient<TSocketImpl>()
     {}
     BCServerSocket(int family, int type, int proto, bcsocket_t sock)
-        : BCSocketClient<BCSocketImplEx>(family, type, proto, sock)
+        : BCSocketClient<TSocketImpl>(family, type, proto, sock)
     {}
     /**
      * This function is called by the server whenever this connection has input available
@@ -195,11 +195,11 @@ private:
 };
 
 template <typename T>
-class BCServer : public BCServerBase<T, BCServerSocket>
+class BCServer : public BCServerBase<T, BCServerSocket<BCSocketImplEx>>
 {
 public:
     BCServer(std::shared_ptr<T> sock)
-    : BCServerBase<T, BCServerSocket>(sock)
+    : BCServerBase<T, BCServerSocket<BCSocketImplEx>>(sock)
     {}
 };
 
