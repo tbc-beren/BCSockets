@@ -25,9 +25,12 @@ TEST(BCSocketBase, basicCreate)
 {
     using namespace BlackCodex::BCSockets;
 
-    BCSocketBase base(AF_UNIX, 2, 3, -2);
+    BCSocketBase base(AF_UNIX, SOCK_DGRAM, 3, -2);
     
-    EXPECT_EQ(-2, base.get());
+    EXPECT_EQ(-2,         base.get());
+    EXPECT_EQ(AF_UNIX,    base.getFamily());
+    EXPECT_EQ(SOCK_DGRAM, base.getType());
+    EXPECT_EQ(3,          base.getProto());
 }
 TEST(BCSocketBase, invalidSocket)
 {
