@@ -19,7 +19,7 @@
 namespace BlackCodex {
 namespace BCSockets {
 
-class BCSocketUnix : public BCSocketClient<BCSocketImplEx> {
+class BCSocketUnix : public BCSocketClient<BCSocketImplNative> {
 public:
     BCSocketUnix()
     {}
@@ -28,16 +28,16 @@ public:
         reset(type);
     }
     virtual ~BCSocketUnix() {
-        BCSocketClient<BCSocketImplEx>::reset();
+        BCSocketClient<BCSocketImplNative>::reset();
     }
 
     void reset(int type) {
-        BCSocketClient<BCSocketImplEx>::reset(AF_UNIX, type, 0);
+        BCSocketClient<BCSocketImplNative>::reset(AF_UNIX, type, 0);
     }
     void connect(const std::string& socketName) {
         struct sockaddr_un addr;
         addrFromName(addr, socketName);
-        BCSocketClient<BCSocketImplEx>::connect((sockaddr*)&addr, sizeof(struct sockaddr_un));
+        BCSocketClient<BCSocketImplNative>::connect((sockaddr*)&addr, sizeof(struct sockaddr_un));
     }
 
     static void addrFromName(struct sockaddr_un& addr, const std::string& socketName) {
@@ -50,7 +50,7 @@ public:
     }
 };
 
-class BCSocketUnixSrv : public BCSocketSrv<BCSocketImplEx> {
+class BCSocketUnixSrv : public BCSocketSrv<BCSocketImplNative> {
     std::string mName;
 public:
     BCSocketUnixSrv()
@@ -70,13 +70,13 @@ public:
         if (AF_UNSPEC == type) {
             BCSocketBase::reset();
         } else {
-            BCSocketSrv<BCSocketImplEx>::reset(AF_UNIX, type, 0);
+            BCSocketSrv<BCSocketImplNative>::reset(AF_UNIX, type, 0);
         }
     }
     void bind() override {
         struct sockaddr_un addr;
         BCSocketUnix::addrFromName(addr, mName);
-        BCSocketSrv<BCSocketImplEx>::implBind((struct sockaddr*)&addr, sizeof(addr));
+        BCSocketSrv<BCSocketImplNative>::implBind((struct sockaddr*)&addr, sizeof(addr));
     }
 };
 

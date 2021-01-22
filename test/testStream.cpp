@@ -51,7 +51,7 @@ TEST(TestStream, DISABLED_testStreamUnix) {
     unlink(SOCKET_NAME.c_str());
 
     BCSocketsApp app;
-    BCServerTestEchoEx<BCSocketUnixSrv, BCServerSocket<BCSocketImplEx>> unixSrv(
+    BCServerTestEchoEx<BCSocketUnixSrv, BCServerSocket<BCSocketImplNative>> unixSrv(
         std::make_shared<BCSocketUnixSrv>(SOCKET_TYPE, SOCKET_NAME)
         );
     unixSrv.init();

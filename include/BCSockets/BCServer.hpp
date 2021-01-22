@@ -11,6 +11,7 @@
 #pragma once
 
 #include <BCSockets/BCSocket.hpp>
+#include <BCSockets/native/BCSocketImplNative.hpp>
 
 #include <mutex>
 #include <queue>
@@ -195,11 +196,11 @@ private:
 };
 
 template <typename T>
-class BCServer : public BCServerBase<T, BCServerSocket<BCSocketImplEx>>
+class BCServer : public BCServerBase<T, BCServerSocket<BCSocketImplNative>>
 {
 public:
     BCServer(std::shared_ptr<T> sock)
-    : BCServerBase<T, BCServerSocket<BCSocketImplEx>>(sock)
+    : BCServerBase<T, BCServerSocket<BCSocketImplNative>>(sock)
     {}
 };
 
