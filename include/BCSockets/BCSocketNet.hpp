@@ -11,25 +11,26 @@
 #pragma once
 
 #include <BCSockets/BCSocket.hpp>
+#include <BCSockets/native/BCSocketImplNative.hpp>
 
 #include <cstring>
 
 namespace BlackCodex {
 namespace BCSockets {
 
-class BCSocketNet : public BCSocketClient<BCSocketImplEx> {
+class BCSocketNet : public BCSocketClient<BCSocketImplNative> {
     struct sockaddr_in mAddr;
 public:
     BCSocketNet()
     {}
     BCSocketNet(int af, int type, int protocol)
-    : BCSocketClient<BCSocketImplEx>()
+    : BCSocketClient<BCSocketImplNative>()
     {
         reset(af, type, protocol);
     }
 };
 
-class BCSocketNetSrv : public BCSocketSrv<BCSocketImplEx> {
+class BCSocketNetSrv : public BCSocketSrv<BCSocketImplNative> {
     int mPort;
 
 public:
@@ -67,7 +68,7 @@ public:
 protected:
     void resetPort(int af, int type, int protocol, int port) {
         mPort = port;
-        BCSocketSrv<BCSocketImplEx>::reset(af, type, protocol);
+        BCSocketSrv<BCSocketImplNative>::reset(af, type, protocol);
     }
 };
 
