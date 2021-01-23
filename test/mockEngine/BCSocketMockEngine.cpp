@@ -10,6 +10,8 @@
 */
 #include "BCSocketMockEngine.h"
 
+#include <cstring>
+
 namespace BlackCodex {
 namespace BCSockets {
 
@@ -28,7 +30,8 @@ std::string BCSocketMockEngine::peerNameFromAddr(const sockaddr& addr, int addrl
     if (addr.sa_family != 0xB1AC) {
         throw BCSocketMockException("invalid socket family");
     }
-    const char* peerNameRaw = *((const char**)addr.sa_data);
+    const char* peerNameRaw = "";
+    memcpy(&peerNameRaw, addr.sa_data, sizeof(void*));
     return std::string(peerNameRaw, addrlen);
 }
 BCSocketMockEngine::BCSocketMockEngine()
