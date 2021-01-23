@@ -68,8 +68,13 @@ enable_testing()
 add_executable(
     BCSocketsTest
 
+    test/mockEngine/BCSocketMockEngine.cpp
+    test/mockEngine/BCSocketMockInternal.cpp
+
     # The tests
     test/test.cpp
+    test/testMockEngine.cpp
+    test/testMockSocket.cpp
     test/testStream.cpp
     )
 target_link_libraries(BCSocketsTest gtest_main)
@@ -110,3 +115,4 @@ add_custom_target(coverage
     BCCoverage
     BCSocketsTest
     )
+    

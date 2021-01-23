@@ -9,6 +9,8 @@
 *
 */
 
+#include "BCSocketImplMock.hpp"
+
 #include <BCSockets/BCServer.hpp>
 #include <BCSockets/BCSocketUnix.hpp>
 
@@ -75,3 +77,31 @@ TEST(TestStream, DISABLED_testStreamUnix) {
     EXPECT_EQ(dataSend, *unixSrv.messages.begin());
 }
 
+TEST(TestStream, testStreamMock) {
+    using namespace BlackCodex::BCSockets;
+
+    static const int            SOCKET_TYPE = SOCK_STREAM;
+    static const std::string    SOCKET_NAME("BCSOCKETSTEST_MOCK_SOCKET");
+
+    BCServerTestEchoEx<BCSocketSrvMock, BCServerSocket<BCSocketImplMock>> mockSrv(
+        std::make_shared<BCSocketSrvMock>(SOCKET_TYPE, SOCKET_NAME)
+        );
+    mockSrv.init();
+    mockSrv.start(false);
+
+    const std::string dataSend("Message!");
+
+    BCSocketMock unixClient(SOCKET_TYPE);
+    unixClient.connect(SOCKET_NAME);
+    unixClient.write(dataSend);
+
+    const std::string dataRecv = unixClient.read();
+    EXPECT_EQ("RV:"+dataSend, dataRecv);
+
+    std::this_thread::sleep_for( std::chrono::milliseconds(100) );
+
+    mockSrv.stop();
+
+    ASSERT_EQ(1UL, mockSrv.messages.size());
+    EXPECT_EQ(dataSend, *mockSrv.messages.begin());
+}
