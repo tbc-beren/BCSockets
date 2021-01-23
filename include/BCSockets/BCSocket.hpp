@@ -35,6 +35,8 @@ public:
             throw BCSocketException("connect failed");
         }
     }
+
+protected:
     virtual bcsocket_t implSocket(int af, int type, int proto) {
         bcsocket_t sock = TImpl::implSocket(af, type, proto);
         return sock;
@@ -55,13 +57,13 @@ public:
 };
 
 template<typename TImpl>
-class BCSocketSrv : public BCSocketBase
+class BCSocketSrv : public BCSocketClient<TImpl>
 {
 public:
     BCSocketSrv()
     {}
     BCSocketSrv(int af, int type, int proto, bcsocket_t s)
-    : BCSocketBase(af, type, proto, s)
+    : BCSocketClient<TImpl>(af, type, proto, s)
     {}
     virtual ~BCSocketSrv() {
         BCSocketBase::reset(INVALID_SOCKET);
@@ -70,15 +72,14 @@ public:
     virtual void bind() = 0;
 
     void listen(int backlog) {
-        if (TImpl::implListen(mSocket, backlog) < 0) {
+        if (TImpl::implListen(this->mSocket, backlog) < 0) {
             throw BCSocketException("listen failed");
         }
     }
 
     bcsocket_t accept() {
-        return TImpl::implAccept(mSocket, nullptr, nullptr);
+        return TImpl::implAccept(this->mSocket, nullptr, nullptr);
     }
-
     void reset(int af, int type, int proto) {
         bcsocket_t s = TImpl::implSocket(af, type, proto);
         BCSocketBase::reset(af, type, proto, s);
@@ -86,7 +87,7 @@ public:
 
 protected:
     void implBind(const sockaddr* addr, int addrlen) {
-        if (TImpl::implBind(mSocket, addr, addrlen) < 0) {
+        if (TImpl::implBind(this->mSocket, addr, addrlen) < 0) {
             throw BCSocketException("bind failed");
         }
     }
