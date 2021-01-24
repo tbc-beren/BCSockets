@@ -54,6 +54,9 @@ protected:
                            fd_set *exceptfds, struct timeval *timeout) const override {
         return TImpl::implSelect(fdMax, readfds, writefds, exceptfds, timeout);
     }
+    virtual int implErrno() const override {
+        return TImpl::implErrno();
+    }
 };
 
 template<typename TImpl>

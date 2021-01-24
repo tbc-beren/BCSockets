@@ -28,6 +28,7 @@ TEST(TestMockSocket, serverBasic)
 
     // Already binded, cannot connect
     EXPECT_EQ(-1, BCSocketMockEngine::socketGet(mockServer.get()).connect(SOCKET_ENDPOINT));
+    EXPECT_EQ(EADDRINUSE, BCSocketMockEngine::socketGet(mockServer.get()).implErrno());
 
     mockServer.listen(1);
     EXPECT_THROW(mockServer.listen(1), BCSocketException);  // Already listening

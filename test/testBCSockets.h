@@ -74,4 +74,8 @@ protected:
         (void)timeout;
         return 0;
     }
+public:
+    virtual int implErrno() const override {
+        return 0;
+    }
 };

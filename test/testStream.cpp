@@ -77,7 +77,7 @@ TEST(TestStream, DISABLED_testStreamUnix) {
     EXPECT_EQ(dataSend, *unixSrv.messages.begin());
 }
 
-TEST(TestStream, testStreamMock) {
+TEST(TestStreamMock, testStreamMock) {
     using namespace BlackCodex::BCSockets;
 
     static const int            SOCKET_TYPE = SOCK_STREAM;

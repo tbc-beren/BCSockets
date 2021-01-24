@@ -46,6 +46,9 @@ public:
     static int implAccept(int sock, struct sockaddr *addr, socklen_t *addrlen) {
         return ::accept(sock, addr, addrlen);
     }
+    static int implErrno(){
+        return errno;
+    }
 };
 
 } // BCSockets

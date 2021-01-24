@@ -38,8 +38,9 @@ BCSocketMockEngine::BCSocketMockEngine()
 : mErrno(0)
 , mIdSocketMax(1)
 {}
+//static
 int BCSocketMockEngine::setError(int errCode) {
-    mErrno = errCode;
+    engine().mErrno = errCode;
     return -1;
 }
 bool BCSocketMockEngine::findServerPeerByName(const std::string& peerName) {
@@ -105,7 +106,7 @@ int BCSocketMockEngine::implBind(bcsocket_t sock, const sockaddr* addr, int addr
     std::string peerName = peerNameFromAddr(*addr, addrlen);
     auto& me = engine();
     if (me.findServerPeerByName(peerName)) {
-        return me.setError(EADDRINUSE);
+        return setError(EADDRINUSE);
     }
     return me.socketGet(sock).bind(peerName);
 }
@@ -148,6 +149,10 @@ int BCSocketMockEngine::implSelect(bcsocket_t nfds, fd_set *readfds, fd_set *wri
     } while(0 == tim2.tv_nsec && 0 == tim2.tv_sec);
 
     return 0;
+}
+//static
+int BCSocketMockEngine::implErrno() {
+    return engine().mErrno;
 }
 //static
 int BCSocketMockEngine::findServerPeer(BCSocketMockInternal& peerConnect) {

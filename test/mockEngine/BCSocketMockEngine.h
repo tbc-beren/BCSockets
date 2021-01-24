@@ -49,8 +49,10 @@ public:
 
     int         receiveConnection(BCSocketMockInternal& remoteSocket);
 
-    int internalWrite(const void* buffer, int bufferlen, int flags);
-    int internalRead (const void* buffer, int bufferlen, int flags);
+    int         implErrno() const override;
+
+    int         internalWrite(const void* buffer, int bufferlen, int flags);
+    int         internalRead (const void* buffer, int bufferlen, int flags);
 };
 
 class BCSocketMockEngine
@@ -65,12 +67,12 @@ class BCSocketMockEngine
 
     BCSocketMockEngine();
 
-    int     setError(int errCode);
     bool    findServerPeerByName(const std::string& peerName);
-
 
 public:
     virtual ~BCSocketMockEngine();
+
+    static int                      setError(int errCode);
 
     static BCSocketMockInternal&    socketNew(int af, int type, int proto);
     static BCSocketMockInternal&    socketGet(bcsocket_t sock);
@@ -84,6 +86,7 @@ public:
     static bcsocket_t               implAccept(int sock, struct sockaddr *addr, socklen_t *addrlen);
     static int                      implSelect(bcsocket_t nfds, fd_set *readfds, fd_set *writefds,
                                                fd_set *exceptfds, struct timeval *timeout);
+    static int                      implErrno();
     static int                      findServerPeer(BCSocketMockInternal& peerConnect);
 };
 

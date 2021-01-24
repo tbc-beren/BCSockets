@@ -26,6 +26,7 @@ protected:
     int         mFamily;
     int         mType;
     int         mProto;
+    int         mStatus;
 
 public:
     BCSocketBase()
@@ -113,7 +114,13 @@ public:
         do {
             len = implRead(text, MAX_BUFFER_LEN, flags);
             if (len < 0) {
-                throw BCSocketException("read failed");
+                mStatus = implErrno();
+                if (ECONNRESET == mStatus) {
+                    text[0] = 0;
+                    len = 0;
+                } else {
+                    throw BCSocketException("read failed");
+                }
             }
             output.append(text, len);
         } while(len >= MAX_BUFFER_LEN);
@@ -158,6 +165,9 @@ protected:
         (void)exceptfds;
         (void)timeout;
         return -1;
+    }
+    virtual int implErrno() const {
+        return mStatus;
     }
 };
 

@@ -25,6 +25,7 @@ TEST(TestMockSocketEngine, bind)
     mockServer.bind();
 
     EXPECT_THROW(mockServer.bind(), BCSocketException); // Already binded
+    EXPECT_EQ(EADDRINUSE, BCSocketMockEngine::implErrno());
 
     BCSocketSrvMock mockServer2(SOCK_STREAM, SOCKET_ENDPOINT);
     EXPECT_THROW(mockServer2.bind(), BCSocketException);

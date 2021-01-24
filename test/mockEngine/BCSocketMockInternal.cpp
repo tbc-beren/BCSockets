@@ -87,6 +87,10 @@ int BCSocketMockInternal::receiveConnection(BCSocketMockInternal& remoteSocket) 
     return -1;
 }
 
+int BCSocketMockInternal::implErrno() const {
+    return BCSocketMockEngine::implErrno();
+}
+
 int BCSocketMockInternal::internalWrite(const void* buffer, int bufferlen, int flags) {
     (void)flags;
     auto& peer = BCSocketMockEngine::socketGet(mRemotePeer);
