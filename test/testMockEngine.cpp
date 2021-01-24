@@ -51,7 +51,7 @@ TEST(TestMockSocketEngine, peerNameFromInvalidAddress)
     using namespace BlackCodex::BCSockets;
 
     sockaddr addr;
-    addr.sa_family = 0x1234; //
+    addr.sa_family = AF_INET; // Address family invalid for MOCK
 
     const std::string SOCKET_ENDPOINT("MOCKSOCKETSERVER-TestEndpoint");
     BCSocketMock mock(SOCK_STREAM);
