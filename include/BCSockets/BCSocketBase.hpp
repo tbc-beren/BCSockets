@@ -34,6 +34,7 @@ public:
     , mFamily(-1)
     , mType(-1)
     , mProto(-1)
+    , mStatus(0)
     {}
     BCSocketBase(int af, int type, int proto, bcsocket_t s)
     : mSocket(INVALID_SOCKET)
