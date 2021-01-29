@@ -100,8 +100,11 @@ TEST(TestStreamMock, testStreamMock) {
 
     std::this_thread::sleep_for( std::chrono::milliseconds(100) );
 
+    unixClient.reset();
     mockSrv.stop();
 
     ASSERT_EQ(1UL, mockSrv.messages.size());
     EXPECT_EQ(dataSend, *mockSrv.messages.begin());
+
+    EXPECT_EQ(0, BCSocketMockEngine::getActiveSockets());
 }

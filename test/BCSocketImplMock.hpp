@@ -29,6 +29,9 @@ public:
         BCSocketMock::reset(type);
     }
     virtual ~BCSocketMock() {
+        reset();
+    }
+    void reset() {
         BCSocketClient<BCSocketImplMock>::reset();
     }
     void reset(int type) {

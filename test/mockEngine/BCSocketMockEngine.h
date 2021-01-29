@@ -88,6 +88,7 @@ public:
                                                fd_set *exceptfds, struct timeval *timeout);
     static int                      implErrno();
     static int                      findServerPeer(BCSocketMockInternal& peerConnect);
+    static size_t                   getActiveSockets();
 };
 
 } // BCSockets

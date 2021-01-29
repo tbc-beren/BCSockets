@@ -165,6 +165,11 @@ int BCSocketMockEngine::findServerPeer(BCSocketMockInternal& peerConnect) {
     }
     return -1;
 }
+//static
+size_t BCSocketMockEngine::getActiveSockets() {
+    return engine().mSockets.size();
+}
+
 
 } // BCSockets
 } // BlackCodex
