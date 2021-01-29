@@ -11,6 +11,7 @@
 #pragma once
 
 #include <BCSockets/BCSocket.hpp>
+#include <BCSockets/native/BCSocketImplNative.hpp>
 
 #include <sys/un.h>
 
