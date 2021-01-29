@@ -75,13 +75,13 @@ public:
     virtual void bind() = 0;
 
     void listen(int backlog) {
-        if (TImpl::implListen(this->mSocket, backlog) < 0) {
+        if (TImpl::implListen(BCSocketClient<TImpl>::mSocket, backlog) < 0) {
             throw BCSocketException("listen failed");
         }
     }
 
     bcsocket_t accept() {
-        return TImpl::implAccept(this->mSocket, nullptr, nullptr);
+        return TImpl::implAccept(BCSocketClient<TImpl>::mSocket, nullptr, nullptr);
     }
     void reset(int af, int type, int proto) {
         bcsocket_t s = TImpl::implSocket(af, type, proto);
@@ -90,7 +90,7 @@ public:
 
 protected:
     void implBind(const sockaddr* addr, int addrlen) {
-        if (TImpl::implBind(this->mSocket, addr, addrlen) < 0) {
+        if (TImpl::implBind(BCSocketClient<TImpl>::mSocket, addr, addrlen) < 0) {
             throw BCSocketException("bind failed");
         }
     }
