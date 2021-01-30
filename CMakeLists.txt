@@ -73,6 +73,9 @@ add_executable(
 
     # The tests
     test/test.cpp
+    test/testHttpExchange.cpp
+    test/testHttpRequest.cpp
+    test/testHttpResponse.cpp
     test/testMockEngine.cpp
     test/testMockSocket.cpp
     test/testStream.cpp

@@ -25,6 +25,9 @@ public:
     BCSocketException(const char* message)
         : runtime_error(message)
     {}
+    BCSocketException(const std::string& message)
+        : runtime_error(message)
+    {}
 };
 
 class BCSocketInvalidException : public BCSocketException
