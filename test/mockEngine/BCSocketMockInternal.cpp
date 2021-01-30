@@ -7,6 +7,10 @@
 * Mozilla Public License Version 2.0
 * https://github.com/tbc-beren/BCSockets/blob/master/LICENSE
 *
+* This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+* If a copy of the MPL was not distributed with this file, You can obtain one at
+* https://mozilla.org/MPL/2.0/.
+*
 */
 #include "BCSocketMockEngine.h"
 
@@ -67,7 +71,6 @@ bcsocket_t BCSocketMockInternal::accept(struct sockaddr* addr, socklen_t* addrle
     }
     return INVALID_SOCKET;
 }
-
 int BCSocketMockInternal::receiveConnection(BCSocketMockInternal& remoteSocket) {
     if (INVALID_SOCKET == remoteSocket.mSocket ||
         INVALID_SOCKET != mRemotePeer) {
@@ -86,18 +89,15 @@ int BCSocketMockInternal::receiveConnection(BCSocketMockInternal& remoteSocket) 
     }
     return -1;
 }
-
 int BCSocketMockInternal::implErrno() const {
     return BCSocketMockEngine::implErrno();
 }
-
 int BCSocketMockInternal::internalWrite(const void* buffer, int bufferlen, int flags) {
     (void)flags;
     auto& peer = BCSocketMockEngine::socketGet(mRemotePeer);
     peer.mData.append( std::string((const char*)buffer, bufferlen) );
     return bufferlen;
 }
-
 int BCSocketMockInternal::internalRead(const void* buffer, int bufferlen, int flags) {
     (void)flags;
     for (int i = 0; i < 10; i++) {

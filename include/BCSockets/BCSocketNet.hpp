@@ -7,6 +7,10 @@
 * Mozilla Public License Version 2.0
 * https://github.com/tbc-beren/BCSockets/blob/master/LICENSE
 *
+* This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+* If a copy of the MPL was not distributed with this file, You can obtain one at
+* https://mozilla.org/MPL/2.0/.
+*
 */
 #pragma once
 
@@ -43,7 +47,6 @@ public:
     {
         resetPort(af, type, protocol, port);
     }
-
     void bind() override {
         int one = 1;
         setsockopt(get(), SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one));
@@ -57,7 +60,6 @@ public:
         const sockaddr* addr = (const sockaddr*)&serv_addr;
         implBind(addr, sizeof(serv_addr));
     }
-
     void reset() {
         BCSocketBase::reset(INVALID_SOCKET);
     }

@@ -7,6 +7,10 @@
 * Mozilla Public License Version 2.0
 * https://github.com/tbc-beren/BCSockets/blob/master/LICENSE
 *
+* This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+* If a copy of the MPL was not distributed with this file, You can obtain one at
+* https://mozilla.org/MPL/2.0/.
+*
 */
 #include "BCSocketMockEngine.h"
 
@@ -95,7 +99,6 @@ int BCSocketMockEngine::implSend(bcsocket_t sock, const void* buffer, int buffer
     auto& sockObj = engine().socketGet(sock);
     return sockObj.internalWrite(buffer, bufferlen, flags);
 }
-
 //static
 int BCSocketMockEngine::implConnect(bcsocket_t sock, const sockaddr* addr, int addrlen) {
     const std::string peerName = peerNameFromAddr(*addr, addrlen);
@@ -169,7 +172,6 @@ int BCSocketMockEngine::findServerPeer(BCSocketMockInternal& peerConnect) {
 size_t BCSocketMockEngine::getActiveSockets() {
     return engine().mSockets.size();
 }
-
 
 } // BCSockets
 } // BlackCodex

@@ -7,8 +7,11 @@
 * Mozilla Public License Version 2.0
 * https://github.com/tbc-beren/BCSockets/blob/master/LICENSE
 *
+* This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+* If a copy of the MPL was not distributed with this file, You can obtain one at
+* https://mozilla.org/MPL/2.0/.
+*
 */
-
 #include "BCSocketImplMock.hpp"
 
 #include <BCSockets/BCServer.hpp>
@@ -43,7 +46,6 @@ public:
     }
 };
 
-
 TEST(TestStream, DISABLED_testStreamUnix) {
     using namespace BlackCodex::BCSockets;
 
@@ -76,7 +78,6 @@ TEST(TestStream, DISABLED_testStreamUnix) {
     ASSERT_EQ(1UL, unixSrv.messages.size());
     EXPECT_EQ(dataSend, *unixSrv.messages.begin());
 }
-
 TEST(TestStreamMock, testStreamMock) {
     using namespace BlackCodex::BCSockets;
 

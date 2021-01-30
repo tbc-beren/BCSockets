@@ -7,6 +7,10 @@
 * Mozilla Public License Version 2.0
 * https://github.com/tbc-beren/BCSockets/blob/master/LICENSE
 *
+* This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+* If a copy of the MPL was not distributed with this file, You can obtain one at
+* https://mozilla.org/MPL/2.0/.
+*
 */
 #pragma once
 
@@ -77,11 +81,9 @@ public:
         }
         mSocket = s;
     }
-
     virtual void reset(bcsocket_t s = INVALID_SOCKET) {
         reset(-1, -1, -1, s);
     }
-
     bool canRead(struct timeval& tv) const {
         const bcsocket_t thisSocket = get();
 
@@ -106,7 +108,6 @@ public:
         struct timeval tv = {0, 0};
         return canRead(tv);
     }
-
     std::string read(int flags = 0) {
         static const int MAX_BUFFER_LEN = 2048;
         std::string output;
@@ -127,7 +128,6 @@ public:
         } while(len >= MAX_BUFFER_LEN);
         return output;
     }
-
     int write(const std::string& text, int flags = 0) {
         if (text.length() > std::numeric_limits<int>::max()) {
             throw BCSocketException("write failed: too big");

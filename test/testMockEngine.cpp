@@ -7,6 +7,10 @@
 * Mozilla Public License Version 2.0
 * https://github.com/tbc-beren/BCSockets/blob/master/LICENSE
 *
+* This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+* If a copy of the MPL was not distributed with this file, You can obtain one at
+* https://mozilla.org/MPL/2.0/.
+*
 */
 #include "testBCSockets.h"
 
@@ -70,7 +74,6 @@ TEST(TestMockSocketEngine, receiveConnectionInvalid)
     auto& sockObject1 = BCSocketMockEngine::socketGet(mock1.get());
     auto& sockObject2 = BCSocketMockEngine::socketGet(mock2.get());
 
-    // close sockObject2  
     sockObject2.reset();
 
     EXPECT_EQ(-1, sockObject1.receiveConnection(sockObject2));

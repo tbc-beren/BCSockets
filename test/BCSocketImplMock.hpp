@@ -7,6 +7,10 @@
 * Mozilla Public License Version 2.0
 * https://github.com/tbc-beren/BCSockets/blob/master/LICENSE
 *
+* This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+* If a copy of the MPL was not distributed with this file, You can obtain one at
+* https://mozilla.org/MPL/2.0/.
+*
 */
 #pragma once
 
@@ -42,7 +46,6 @@ public:
         addrFromName(addr, socketName);
         BCSocketClient<BCSocketImplMock>::connect(&addr, socketName.size());
     }
-
     static
     void addrFromName(struct sockaddr& addr, const std::string& socketName) {
         addr.sa_family = 0XB1AC;
