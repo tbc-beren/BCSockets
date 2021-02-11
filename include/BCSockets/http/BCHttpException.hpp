@@ -47,5 +47,19 @@ public:
     {}
 };
 
+class BCHttpStatusException : public BCSocketException
+{
+public:
+    BCHttpStatusException()
+    : BCSocketException("")
+    {}
+};
+class BCHttpStatus404NotFoundException : public BCHttpStatusException
+{
+public:
+    BCHttpStatus404NotFoundException()
+    {}
+};
+
 } // BCSockets
 } // BCTools
