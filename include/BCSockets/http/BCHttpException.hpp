@@ -54,12 +54,20 @@ public:
     : BCSocketException("")
     {}
 };
-class BCHttpStatus404NotFoundException : public BCHttpStatusException
-{
-public:
-    BCHttpStatus404NotFoundException()
-    {}
-};
+
+#define DEFINE_HTTP_STATUS_EXCEPTION(ExceptionName) \
+    class ExceptionName : public BCHttpStatusException \
+    { \
+    public:\
+        ExceptionName(){} \
+    }\
+
+DEFINE_HTTP_STATUS_EXCEPTION(BCHttpStatus400BadRequestException);
+DEFINE_HTTP_STATUS_EXCEPTION(BCHttpStatus401UnauthorizedException);
+DEFINE_HTTP_STATUS_EXCEPTION(BCHttpStatus403ForbiddenException);
+DEFINE_HTTP_STATUS_EXCEPTION(BCHttpStatus404NotFoundException);
+
+DEFINE_HTTP_STATUS_EXCEPTION(BCHttpStatus500InternalServerErrorException);
 
 } // BCSockets
 } // BCTools
