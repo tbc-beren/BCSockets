@@ -18,6 +18,13 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
+#ifdef BCOPENSSL
+
+#include <openssl/ssl.h>
+#include <openssl/conf.h>
+
+#endif // BCOPENSSL
+
 typedef int bcsocket_t;
 #define INVALID_SOCKET (-1)
 #define closesocket(sock) close(sock)
@@ -29,10 +36,20 @@ class BCSocketsApp
 {
 public:
     BCSocketsApp()
-    {}
+    {
+#ifdef BCOPENSSL
+        SSL_library_init();
+        SSLeay_add_ssl_algorithms();
+        SSL_load_error_strings();
+#endif
+    }
 
     virtual ~BCSocketsApp()
-    {}
+    {
+#ifdef BCOPENSSL
+        EVP_cleanup();
+#endif
+    }
 };
 
 }
