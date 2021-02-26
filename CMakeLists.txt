@@ -68,7 +68,7 @@ endif (DEFINED BCSOCKETS_TESTCOVERAGE)
 # Set OpenSSL options when needed
 message(STATUS "Build with OpenSSL: ${BCOPENSSL}")
 
-if (${BCOPENSSL} STREQUAL "yes")
+if ("${BCOPENSSL}" STREQUAL "yes")
   set(BCSOCKETS_OpenSSL_TestFiles
       test/testSSLContext.cpp
       )
@@ -93,7 +93,7 @@ add_executable(
     ${BCSOCKETS_OpenSSL_TestFiles}
     )
 
-if (${BCOPENSSL} STREQUAL "yes")
+if ("${BCOPENSSL}" STREQUAL "yes")
   message(STATUS "     OpenSSL Enabled")
   find_package(OpenSSL REQUIRED)
   target_compile_definitions(
