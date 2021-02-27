@@ -46,13 +46,31 @@ public:
     }
 };
 
-TEST(TestStream, DISABLED_testStreamUnix) {
+class TestStream : public ::testing::Test
+{
+    void cleanUp() {
+        unlink(getTestUnixSocketName().c_str());
+    }
+
+public:
+    virtual void SetUp() override {
+        cleanUp();
+    }
+    virtual void TearDown() override {
+        cleanUp();
+    }
+
+    const std::string& getTestUnixSocketName() {
+        static const std::string SOCKET_NAME("BCSOCKETSTEST_UNIX_SOCKET");
+        return SOCKET_NAME;
+    }
+};
+
+TEST_F(TestStream, testStreamUnix) {
     using namespace BlackCodex::BCSockets;
 
     static const int            SOCKET_TYPE = SOCK_STREAM;
-    static const std::string    SOCKET_NAME("BCSOCKETSTEST_UNIX_SOCKET");
-
-    unlink(SOCKET_NAME.c_str());
+    static const std::string&   SOCKET_NAME = getTestUnixSocketName();
 
     BCSocketsApp app;
     BCServerTestEchoEx<BCSocketUnixSrv, BCServerSocket<BCSocketImplNative>> unixSrv(
