@@ -12,7 +12,8 @@
 #
 # === Build Debug ============================================================
 # cmake .. -DCMAKE_BUILD_TYPE=Debug
-#                     -DBCOPENSSL=yes
+#                     -DBCSOCKETS_OPENSSL=yes
+#                     -DBCSOCKETS_TESTCOVERAGE=1
 #
 cmake_minimum_required (VERSION 3.8)
 
@@ -66,9 +67,9 @@ set(COVERAGE_OPTIONS "--coverage")
 endif (DEFINED BCSOCKETS_TESTCOVERAGE)
 
 # Set OpenSSL options when needed
-message(STATUS "Build with OpenSSL: ${BCOPENSSL}")
+message(STATUS "Build with OpenSSL: ${BCSOCKETS_OPENSSL}")
 
-if ("${BCOPENSSL}" STREQUAL "yes")
+if ("${BCSOCKETS_OPENSSL}" STREQUAL "yes")
   set(BCSOCKETS_OpenSSL_TestFiles
       test/testSSLContext.cpp
       )
@@ -93,13 +94,13 @@ add_executable(
     ${BCSOCKETS_OpenSSL_TestFiles}
     )
 
-if ("${BCOPENSSL}" STREQUAL "yes")
+if ("${BCSOCKETS_OPENSSL}" STREQUAL "yes")
   message(STATUS "     OpenSSL Enabled")
   find_package(OpenSSL REQUIRED)
   target_compile_definitions(
     BCSocketsTest
     PRIVATE
-    BCOPENSSL=yes
+    BCSOCKETS_OPENSSL=yes
     )
 
 target_link_libraries(

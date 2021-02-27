@@ -14,8 +14,8 @@
 */
 #pragma once
 
-#ifndef BCOPENSSL
-#error Requires to build with BCOPENSSL enabled
+#ifndef BCSOCKETS_OPENSSL
+#error Requires to build with BCSOCKETS_OPENSSL enabled
 #endif
 
 #include <BCSockets/ssl/BCSSLError.hpp>
