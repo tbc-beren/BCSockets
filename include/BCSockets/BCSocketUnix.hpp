@@ -46,7 +46,7 @@ public:
     }
 
     static void addrFromName(struct sockaddr_un& addr, const std::string& socketName) {
-        if (socketName.length() >= sizeof(addr.sun_path)-1) {
+        if (socketName.length() >= sizeof(addr.sun_path)) {
             throw BlackCodex::BCSockets::BCSocketException("socket name too long");
         }
         memset(&addr, 0, sizeof(addr));

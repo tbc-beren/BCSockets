@@ -90,6 +90,7 @@ add_executable(
     test/testMockEngine.cpp
     test/testMockSocket.cpp
     test/testStream.cpp
+    test/testUnix.cpp
 
     ${BCSOCKETS_OpenSSL_TestFiles}
     )
