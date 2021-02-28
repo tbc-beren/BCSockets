@@ -32,7 +32,7 @@ protected:
     std::string     mProtocol;
     BCHttpHeaders   mHeaders;
     bool            mHeadersComplete;
-    std::string     mContent;
+    std::string     mBody;
 
 public:
     BCHttpExchange()
@@ -62,8 +62,8 @@ public:
         return HEADER_EMPTY;
     }
 
-    const std::string& getContent() const {
-        return mContent;
+    const std::string& getBody() const {
+        return mBody;
     }
 
     void feed(const std::string& data) {
@@ -72,7 +72,7 @@ public:
 
     void feed(const char* data, size_t datasize) {
         if (mHeadersComplete) {
-            mContent.append(data, datasize);
+            mBody.append(data, datasize);
             return;
         }
 
@@ -200,7 +200,6 @@ class BCHttpResponse : public BCHttpRequestResponseCommon
     std::string mMessage;
 
     bool mComplete;
-    std::string mBody;
 
 public:
     BCHttpResponse()
@@ -241,9 +240,6 @@ public:
         if (!headersCompleted()) {
             mHeadersComplete = true;
         }
-    }
-    const std::string& getBody() const {
-        return mBody;
     }
     std::string getResponseHeaders() const {
         std::string response(getProtocol() + " " + std::to_string(getCode()));

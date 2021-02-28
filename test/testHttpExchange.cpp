@@ -51,7 +51,7 @@ TEST(HttpExchange, basic)
     for (const auto& field : fields) {
         EXPECT_STREQ(field.second.c_str(), ex.getHeader(field.first).c_str());
     }
-    EXPECT_STREQ(TEST_BODY, ex.getContent().c_str());
+    EXPECT_STREQ(TEST_BODY, ex.getBody().c_str());
 
     EXPECT_TRUE(ex.getHeader("NotExistingKey").empty());
 }
