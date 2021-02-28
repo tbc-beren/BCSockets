@@ -68,7 +68,7 @@ public:
             res = addr;
             while (res)
             {
-                inet_ntop (res->ai_family, res->ai_addr->sa_data, addrstr, MAX_ADDR_SIZE);
+                inet_ntop(res->ai_family, res->ai_addr->sa_data, addrstr, MAX_ADDR_SIZE);
 
                 switch (res->ai_family) {
                 case AF_INET:
