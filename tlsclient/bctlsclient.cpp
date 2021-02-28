@@ -72,7 +72,7 @@ int main(int argc, char* argv[]) {
     }
 
     std::cout << "Contents:" << std::endl;
-    std::cout << "" << resp.getContent() << std::endl;
+    std::cout << "" << resp.getBody() << std::endl;
     std::cout << std::endl << std::endl;
 
     return code < 200 || code > 299;

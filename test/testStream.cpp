@@ -96,6 +96,22 @@ TEST_F(TestStream, testStreamUnix) {
     ASSERT_EQ(1UL, unixSrv.messages.size());
     EXPECT_EQ(dataSend, *unixSrv.messages.begin());
 }
+
+TEST_F(TestStream, testStreamUnixSocketNotFound) {
+    using namespace BlackCodex::BCSockets;
+
+    static const int            SOCKET_TYPE = SOCK_STREAM;
+    static const std::string&   SOCKET_NAME = getTestUnixSocketName();
+
+    BCSocketsApp app;
+
+    BCSocketUnix unixClient(SOCKET_TYPE);
+    EXPECT_THROW(unixClient.connect(SOCKET_NAME), BCSocketException);
+    EXPECT_EQ(ENOENT, unixClient.implErrno());   // Not found
+
+    std::this_thread::sleep_for( std::chrono::milliseconds(100) );
+}
+
 TEST(TestStreamMock, testStreamMock) {
     using namespace BlackCodex::BCSockets;
 

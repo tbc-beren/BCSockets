@@ -40,6 +40,10 @@ public:
         }
     }
 
+    virtual int implErrno() const override {
+        return TImpl::implErrno();
+    }
+
 protected:
     virtual bcsocket_t implSocket(int af, int type, int proto) {
         bcsocket_t sock = TImpl::implSocket(af, type, proto);
@@ -57,9 +61,6 @@ protected:
     virtual int implSelect(bcsocket_t fdMax, fd_set *readfds, fd_set *writefds,
                            fd_set *exceptfds, struct timeval *timeout) const override {
         return TImpl::implSelect(fdMax, readfds, writefds, exceptfds, timeout);
-    }
-    virtual int implErrno() const override {
-        return TImpl::implErrno();
     }
 };
 
