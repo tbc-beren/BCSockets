@@ -33,11 +33,13 @@ $ cmake ../.. -DCMAKE_BUILD_TYPE=Debug -DBCSOCKETS_OPENSSL=yes
 ## Coverage
 This project uses lcov in order to provide code coverage information.
 
-Coverage test includes Unit Test and a TLS request to ***https://www.iana.org/index.html***. Therefore this test requires a working internet ocnnection.
+Coverage test includes Unit Test and a TLS request to ***https://www.iana.org/index.html***. Therefore this test requires a working internet connection.
 
 For convenience, coverage test can be run just by using ***cmake***:
 
+```
 $ cmake ../.. -DCMAKE_BUILD_TYPE=Debug -DBCSOCKETS_OPENSSL=yes -DBCSOCKETS_TESTCOVERAGE=1
 $ make coverage
+```
 
 After executing this command, coverage information can be accessed in the ***cov-results*** sub directory (index.html).
