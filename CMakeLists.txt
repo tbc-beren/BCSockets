@@ -69,6 +69,41 @@ endif (DEFINED BCSOCKETS_TESTCOVERAGE)
 # Set OpenSSL options when needed
 message(STATUS "Build with OpenSSL: ${BCSOCKETS_OPENSSL}")
 
+# BCTLSClient
+if ("${BCSOCKETS_OPENSSL}" STREQUAL "yes")
+  message(STATUS "     OpenSSL Enabled")
+  find_package(OpenSSL REQUIRED)
+endif()
+
+if ("${BCSOCKETS_OPENSSL}" STREQUAL "yes")
+  add_executable(
+    BCTLSClient
+
+    tlsclient/bctlsclient.cpp
+
+    )
+
+  target_compile_definitions(
+    BCTLSClient
+    PRIVATE
+    BCSOCKETS_OPENSSL=yes
+    )
+
+    if(MSVC)
+      target_compile_options(BCTLSClient PRIVATE /W4 /WX)
+    else()
+      target_compile_options(BCTLSClient PRIVATE -Wall -Wextra -pedantic -Werror ${COVERAGE_OPTIONS})
+    endif()
+
+    target_link_libraries(
+    BCTLSClient
+    BCSockets
+    ${OPENSSL_LIBRARIES}
+    ${COVERAGE_OPTIONS}
+  )
+endif()
+
+# BCSocketsTest
 if ("${BCSOCKETS_OPENSSL}" STREQUAL "yes")
   set(BCSOCKETS_OpenSSL_TestFiles
       test/testSSLContext.cpp
@@ -97,17 +132,16 @@ add_executable(
 
 if ("${BCSOCKETS_OPENSSL}" STREQUAL "yes")
   message(STATUS "     OpenSSL Enabled")
-  find_package(OpenSSL REQUIRED)
   target_compile_definitions(
     BCSocketsTest
     PRIVATE
     BCSOCKETS_OPENSSL=yes
     )
 
-target_link_libraries(
-    BCSocketsTest
-    ${OPENSSL_LIBRARIES}
-  )
+    target_link_libraries(
+      BCSocketsTest
+      ${OPENSSL_LIBRARIES}
+    )
 endif()
 
 target_link_libraries(BCSocketsTest gtest_main)
@@ -127,6 +161,8 @@ add_custom_command(
   COMMAND rm -f *.info
   COMMAND rm -rf cov-results
   COMMAND ./BCSocketsTest
+  COMMAND ./BCTLSClient # help screen coverage
+  COMMAND ./BCTLSClient www.iana.org /index.html
   COMMAND lcov -t "result" -o coverage_01.info -c -d .
   COMMAND lcov --remove coverage_01.info -o coverage.info '/usr/include/*' '*/googletest-src/*'
   COMMAND genhtml -o cov-results coverage.info
